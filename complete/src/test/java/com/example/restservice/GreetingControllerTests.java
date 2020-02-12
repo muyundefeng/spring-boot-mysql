@@ -20,12 +20,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -49,4 +52,15 @@ public class GreetingControllerTests {
 				.andExpect(jsonPath("$.content").value("Hello, Spring Community!"));
 	}
 
+	@Test
+	public void testAddUser() throws Exception {
+		User user = new User();
+		user.setName("tom");
+		user.setEmail("lsprofessor@163.com");
+		ObjectMapper mapper = new ObjectMapper();
+		String paraJson = mapper.writeValueAsString(user);
+
+		String url = "/add";
+		this.mockMvc.perform(MockMvcRequestBuilders.post(url).contentType(MediaType.APPLICATION_JSON).content(paraJson)).andDo(print()).andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
+	}
 }
